@@ -15,9 +15,18 @@ fn main() {
 	let reader = BufReader::new(File::open("keywords.txt").unwrap());
 
 	let mut map = phf_codegen::Map::new();
-	for word in reader.lines()
+	for line in reader.lines()
 	{
-		map.entry(word.unwrap(),"\"_keyword_\"");
+		let line = line.unwrap();
+
+		// must be two words (key,replacement)
+		let mut words = line.split_whitespace();
+
+		let key = words.next().unwrap();
+		let replacement = words.next().unwrap();
+		assert_eq!(None,words.next());
+
+		map.entry(key.to_string(),&format!("\"{}\"",replacement.to_string()));
 	}
 	map.build(&mut file).unwrap();
 
